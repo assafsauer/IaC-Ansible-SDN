@@ -1,0 +1,43 @@
+# Copyright 2018 VMware, Inc.
+# SPDX-License-Identifier: BSD-2-Clause OR GPL-3.0-only
+---
+- hosts: localhost
+  become: yes
+  vars:
+      nsx_manager: '192.168.1.75'
+      nsx_username: 'admin'
+      nsx_password: 'XXX'
+      validate_certs: 'false'
+      #state: "present"
+  tasks:
+    - name: Group ANS-web-vms
+      nsxt_policy_group:
+        hostname: "{{ nsx_manager }}"
+        username: "{{ nsx_username }}"
+        password: "{{ nsx_password }}"
+        validate_certs: "{{ validate_certs }}"
+        state: "{{ state }}"
+        display_name: "ANS-web-vms"
+        domain_id: "default"
+        expression:
+          - resource_type: "Condition"
+            member_type: "VirtualMachine"
+            key: "Tag"
+            operator: "EQUALS"
+            value: "web"
+ 
+    - name: Group ANS-db-vms
+      nsxt_policy_group:
+        hostname: "{{ nsx_manager }}"
+        username: "{{ nsx_username }}"
+        password: "{{ nsx_password }}"
+        validate_certs: "{{ validate_certs }}"
+        state: "{{ state }}"
+        display_name: "ANS-db-vms"
+        domain_id: "default"
+        expression:
+          - resource_type: "Condition"
+            member_type: "VirtualMachine"
+            key: "Tag"
+            operator: "EQUALS"
+            value: "db"
