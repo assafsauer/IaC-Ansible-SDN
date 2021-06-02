@@ -6,7 +6,7 @@
   vars:
       nsx_manager: '192.168.1.75'
       nsx_username: 'admin'
-      nsx_password: 'XXX'
+      nsx_password: 'SAuer1357N@1357N'
       validate_certs: 'false'
       #state: "present"
   tasks:
@@ -41,3 +41,20 @@
             key: "Tag"
             operator: "EQUALS"
             value: "db"
+
+
+    - name: Group ANS-all-vms
+      nsxt_policy_group:
+        hostname: "{{ nsx_manager }}"
+        username: "{{ nsx_username }}"
+        password: "{{ nsx_password }}"
+        validate_certs: "{{ validate_certs }}"
+        state: "{{ state }}"
+        display_name: "ANS-all-vms"
+        domain_id: "default"
+        expression:
+          - resource_type: "Condition"
+            member_type: "VirtualMachine"
+            key: "Tag"
+            operator: "EQUALS"
+            value: "nsx"
