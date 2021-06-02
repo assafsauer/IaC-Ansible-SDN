@@ -1,0 +1,69 @@
+# Copyright 2018 VMware, Inc.
+# SPDX-License-Identifier: BSD-2-Clause OR GPL-3.0-only
+---
+- hosts: localhost
+  become: yes
+  vars:
+      nsx_manager: '192.168.1.75'
+      nsx_username: 'admin'
+      nsx_password: 'XXX'
+      validate_certs: 'false'
+      #state: "present"
+  tasks:
+    - name: Security Policy ANS-Ops
+      nsxt_policy_security_policy:
+        hostname: "{{ nsx_manager }}"
+        username: "{{ nsx_username }}"
+        password: "{{ nsx_password }}"
+        validate_certs: "{{ validate_certs }}"
+        state: "{{ state }}"
+        display_name: "ANS-Ops"
+        domain_id: "default"
+        category: "Infrastructure"
+        rules:
+          - action: "REJECT"
+            display_name: "Allow-SSH"
+            source_groups: ["ANY"]
+            destination_groups: ["/infra/domains/default/groups/ANS-all-vms"]
+            services: ["/infra/services/SSH"]
+          - action: "ALLOW"
+            display_name: "Allow-ICMP"
+            source_groups: ["ANY"]
+            destination_groups: ["/infra/domains/default/groups/ANS-all-vms"]
+            services: ["/infra/services/ICMP-ALL"]
+
+
+
+    - name: Security Policy ANS-Allow-SQl
+      nsxt_policy_security_policy:
+        hostname: "{{ nsx_manager }}"
+        username: "{{ nsx_username }}"
+        password: "{{ nsx_password }}"
+        validate_certs: "{{ validate_certs }}"
+        state: "{{ state }}"
+        display_name: "ANS-Allow-db" 
+        domain_id: "default"
+        category: "Application"
+        rules:
+          - action: "ALLOW"
+            display_name: "allow-db"
+            source_groups: ["/infra/domains/default/groups/ANS-web-vms"]
+            destination_groups: ["/infra/domains/default/groups/ANS-db-vms"]
+            services: ["/infra/services/Mongodb"]
+
+    - name: Security Policy ANS-Allow-HTTP
+      nsxt_policy_security_policy:
+        hostname: "{{ nsx_manager }}"
+        username: "{{ nsx_username }}"
+        password: "{{ nsx_password }}"
+        validate_certs: "{{ validate_certs }}"
+        state: "{{ state }}"
+        display_name: "ANS-Allow-HTTP"
+        domain_id: "default"
+        category: "Application"
+        rules:
+          - action: "ALLOW"
+            display_name: "allow-80-443"
+            source_groups: ["ANY"]
+            destination_groups: ["/infra/domains/default/groups/ANS-web-vms"]
+            services: ["/infra/services/HTTP", "/infra/services/HTTPS"]
