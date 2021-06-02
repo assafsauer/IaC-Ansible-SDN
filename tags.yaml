@@ -1,0 +1,39 @@
+# Copyright 2018 VMware, Inc.
+# SPDX-License-Identifier: BSD-2-Clause OR GPL-3.0-only
+---
+- hosts: localhost
+  become: yes
+  vars:
+      vcenter_hostname: 'vcsa.osauer.local'
+      vcenter_username: 'administrator@osauer.local'
+      vcenter_password: 'XXX'
+      validate_certs: no 
+      #state: "present"
+  tasks:
+   - name: Add tags to a virtual machine
+     community.vmware.vmware_tag_manager:
+       hostname: '{{ vcenter_hostname }}'
+       username: '{{ vcenter_username }}'
+       password: '{{ vcenter_password }}'
+       validate_certs: no
+       tag_names:
+         - microsegment:db 
+         - all:nsx
+       object_name: MongoDB 
+       object_type: VirtualMachine
+       state: add
+     delegate_to: localhost 
+
+   - name: Add tags to a virtual machine
+     community.vmware.vmware_tag_manager:
+       hostname: '{{ vcenter_hostname }}'
+       username: '{{ vcenter_username }}'
+       password: '{{ vcenter_password }}'
+       validate_certs: no
+       tag_names:
+         - microsegment:web  
+         - all:nsx 
+       object_name: Node4j 
+       object_type: VirtualMachine
+       state: add
+     delegate_to: localhost 
